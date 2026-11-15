@@ -1,0 +1,3 @@
+azure-functions
+# optional: only if AZURE_OPENAI_USE_MI=true (managed identity instead of API key)
+azure-identity

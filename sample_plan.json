@@ -1,0 +1,27 @@
+{
+  "terraform_version": "1.9.5",
+  "resource_changes": [
+    {"address": "module.prod_data.azurerm_subnet.dbx_private", "mode": "managed", "type": "azurerm_subnet", "name": "dbx_private",
+     "action_reason": "replace_because_cannot_update",
+     "change": {"actions": ["delete", "create"], "before": {"name": "dbx-private", "address_prefixes": ["10.0.1.0/24"]}, "after": {"name": "dbx-private-v2", "address_prefixes": ["10.0.1.0/24"]}, "replace_paths": [["name"]]}},
+    {"address": "module.prod_data.databricks_cluster.etl[1]", "mode": "managed", "type": "databricks_cluster", "name": "etl",
+     "action_reason": "delete_because_count_index",
+     "change": {"actions": ["delete"], "before": {"cluster_name": "etl-b"}, "after": null}},
+    {"address": "module.prod_data.databricks_cluster.etl[0]", "mode": "managed", "type": "databricks_cluster", "name": "etl",
+     "change": {"actions": ["update"], "before": {"cluster_name": "etl-a", "num_workers": 2}, "after": {"cluster_name": "etl-b", "num_workers": 2}}},
+    {"address": "azurerm_mssql_database.orders", "mode": "managed", "type": "azurerm_mssql_database", "name": "orders",
+     "action_reason": "delete_because_no_resource_config",
+     "change": {"actions": ["delete"], "before": {"identifier": "orders"}, "after": null}},
+    {"address": "module.sql.azurerm_mssql_database.orders", "mode": "managed", "type": "azurerm_mssql_database", "name": "orders",
+     "change": {"actions": ["create"], "before": null, "after": {"identifier": "orders"}}},
+    {"address": "azurerm_role_assignment.ci", "mode": "managed", "type": "azurerm_role_assignment", "name": "ci",
+     "change": {"actions": ["update"], "before": {"policy": "a"}, "after": {"policy": "b"}}},
+    {"address": "azurerm_log_analytics_workspace.app", "mode": "managed", "type": "azurerm_log_analytics_workspace", "name": "app",
+     "change": {"actions": ["delete", "create"], "before": {"name": "a"}, "after": {"name": "b"}, "replace_paths": [["name"]]}},
+    {"address": "data.aws_caller_identity.me", "mode": "data", "type": "aws_caller_identity", "name": "me",
+     "change": {"actions": ["read"]}}
+  ],
+  "resource_drift": [
+    {"address": "databricks_cluster_policy.default", "change": {"actions": ["update"]}}
+  ]
+}
