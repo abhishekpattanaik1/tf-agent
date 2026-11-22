@@ -1,27 +1,388 @@
 {
-  "terraform_version": "1.9.5",
-  "resource_changes": [
-    {"address": "module.prod_data.azurerm_subnet.dbx_private", "mode": "managed", "type": "azurerm_subnet", "name": "dbx_private",
-     "action_reason": "replace_because_cannot_update",
-     "change": {"actions": ["delete", "create"], "before": {"name": "dbx-private", "address_prefixes": ["10.0.1.0/24"]}, "after": {"name": "dbx-private-v2", "address_prefixes": ["10.0.1.0/24"]}, "replace_paths": [["name"]]}},
-    {"address": "module.prod_data.databricks_cluster.etl[1]", "mode": "managed", "type": "databricks_cluster", "name": "etl",
-     "action_reason": "delete_because_count_index",
-     "change": {"actions": ["delete"], "before": {"cluster_name": "etl-b"}, "after": null}},
-    {"address": "module.prod_data.databricks_cluster.etl[0]", "mode": "managed", "type": "databricks_cluster", "name": "etl",
-     "change": {"actions": ["update"], "before": {"cluster_name": "etl-a", "num_workers": 2}, "after": {"cluster_name": "etl-b", "num_workers": 2}}},
-    {"address": "azurerm_mssql_database.orders", "mode": "managed", "type": "azurerm_mssql_database", "name": "orders",
-     "action_reason": "delete_because_no_resource_config",
-     "change": {"actions": ["delete"], "before": {"identifier": "orders"}, "after": null}},
-    {"address": "module.sql.azurerm_mssql_database.orders", "mode": "managed", "type": "azurerm_mssql_database", "name": "orders",
-     "change": {"actions": ["create"], "before": null, "after": {"identifier": "orders"}}},
-    {"address": "azurerm_role_assignment.ci", "mode": "managed", "type": "azurerm_role_assignment", "name": "ci",
-     "change": {"actions": ["update"], "before": {"policy": "a"}, "after": {"policy": "b"}}},
-    {"address": "azurerm_log_analytics_workspace.app", "mode": "managed", "type": "azurerm_log_analytics_workspace", "name": "app",
-     "change": {"actions": ["delete", "create"], "before": {"name": "a"}, "after": {"name": "b"}, "replace_paths": [["name"]]}},
-    {"address": "data.aws_caller_identity.me", "mode": "data", "type": "aws_caller_identity", "name": "me",
-     "change": {"actions": ["read"]}}
-  ],
-  "resource_drift": [
-    {"address": "databricks_cluster_policy.default", "change": {"actions": ["update"]}}
-  ]
+ "terraform_version": "1.9.5",
+ "resource_changes": [
+  {
+   "address": "module.prod_data.azurerm_subnet.dbx_private",
+   "mode": "managed",
+   "type": "azurerm_subnet",
+   "name": "dbx_private",
+   "action_reason": "replace_because_cannot_update",
+   "change": {
+    "actions": [
+     "delete",
+     "create"
+    ],
+    "before": {
+     "name": "dbx-private",
+     "address_prefixes": [
+      "10.0.1.0/24"
+     ]
+    },
+    "after": {
+     "name": "dbx-private-v2",
+     "address_prefixes": [
+      "10.0.1.0/24"
+     ]
+    },
+    "replace_paths": [
+     [
+      "name"
+     ]
+    ]
+   }
+  },
+  {
+   "address": "module.prod_data.azurerm_private_endpoint.dbx",
+   "mode": "managed",
+   "type": "azurerm_private_endpoint",
+   "name": "dbx",
+   "change": {
+    "actions": [
+     "update"
+    ],
+    "before": {
+     "subnet_id": "/subscriptions/x/subnets/dbx-private"
+    },
+    "after": {},
+    "after_unknown": {
+     "subnet_id": true
+    }
+   }
+  },
+  {
+   "address": "module.prod_data.databricks_cluster.etl[1]",
+   "mode": "managed",
+   "type": "databricks_cluster",
+   "name": "etl",
+   "action_reason": "delete_because_count_index",
+   "change": {
+    "actions": [
+     "delete"
+    ],
+    "before": {
+     "cluster_name": "etl-b"
+    },
+    "after": null
+   }
+  },
+  {
+   "address": "module.prod_data.databricks_cluster.etl[0]",
+   "mode": "managed",
+   "type": "databricks_cluster",
+   "name": "etl",
+   "change": {
+    "actions": [
+     "update"
+    ],
+    "before": {
+     "cluster_name": "etl-a",
+     "num_workers": 2
+    },
+    "after": {
+     "cluster_name": "etl-b",
+     "num_workers": 2
+    }
+   }
+  },
+  {
+   "address": "azurerm_mssql_database.orders",
+   "mode": "managed",
+   "type": "azurerm_mssql_database",
+   "name": "orders",
+   "action_reason": "delete_because_no_resource_config",
+   "change": {
+    "actions": [
+     "delete"
+    ],
+    "before": {
+     "identifier": "orders"
+    },
+    "after": null
+   }
+  },
+  {
+   "address": "module.sql.azurerm_mssql_database.orders",
+   "mode": "managed",
+   "type": "azurerm_mssql_database",
+   "name": "orders",
+   "change": {
+    "actions": [
+     "create"
+    ],
+    "before": null,
+    "after": {
+     "identifier": "orders"
+    }
+   }
+  },
+  {
+   "address": "azurerm_role_assignment.ci",
+   "mode": "managed",
+   "type": "azurerm_role_assignment",
+   "name": "ci",
+   "change": {
+    "actions": [
+     "update"
+    ],
+    "before": {
+     "policy": "a"
+    },
+    "after": {
+     "policy": "b"
+    }
+   }
+  },
+  {
+   "address": "azurerm_log_analytics_workspace.app",
+   "mode": "managed",
+   "type": "azurerm_log_analytics_workspace",
+   "name": "app",
+   "change": {
+    "actions": [
+     "delete",
+     "create"
+    ],
+    "before": {
+     "name": "a"
+    },
+    "after": {
+     "name": "b"
+    },
+    "replace_paths": [
+     [
+      "name"
+     ]
+    ]
+   }
+  },
+  {
+   "address": "data.aws_caller_identity.me",
+   "mode": "data",
+   "type": "aws_caller_identity",
+   "name": "me",
+   "change": {
+    "actions": [
+     "read"
+    ]
+   }
+  }
+ ],
+ "resource_drift": [
+  {
+   "address": "databricks_cluster_policy.default",
+   "change": {
+    "actions": [
+     "update"
+    ]
+   }
+  }
+ ],
+ "configuration": {
+  "provider_config": {
+   "azurerm": {
+    "name": "azurerm",
+    "full_name": "registry.terraform.io/hashicorp/azurerm"
+   },
+   "module.prod_data:databricks": {
+    "name": "databricks",
+    "full_name": "registry.terraform.io/databricks/databricks",
+    "module_address": "module.prod_data",
+    "expressions": {
+     "host": {
+      "references": [
+       "azurerm_databricks_workspace.this.workspace_url",
+       "azurerm_databricks_workspace.this"
+      ]
+     }
+    }
+   }
+  },
+  "root_module": {
+   "resources": [
+    {
+     "address": "azurerm_role_assignment.ci",
+     "mode": "managed",
+     "type": "azurerm_role_assignment",
+     "name": "ci",
+     "provider_config_key": "azurerm",
+     "expressions": {
+      "scope": {
+       "references": [
+        "module.prod_data.workspace_id",
+        "module.prod_data"
+       ]
+      }
+     }
+    },
+    {
+     "address": "azurerm_log_analytics_workspace.app",
+     "mode": "managed",
+     "type": "azurerm_log_analytics_workspace",
+     "name": "app",
+     "provider_config_key": "azurerm",
+     "expressions": {}
+    }
+   ],
+   "module_calls": {
+    "prod_data": {
+     "source": "./modules/data",
+     "expressions": {
+      "vnet_name": {
+       "constant_value": "vnet-prod"
+      }
+     },
+     "module": {
+      "outputs": {
+       "workspace_id": {
+        "expression": {
+         "references": [
+          "azurerm_databricks_workspace.this.id",
+          "azurerm_databricks_workspace.this"
+         ]
+        }
+       }
+      },
+      "resources": [
+       {
+        "address": "azurerm_subnet.dbx_private",
+        "mode": "managed",
+        "type": "azurerm_subnet",
+        "name": "dbx_private",
+        "provider_config_key": "azurerm",
+        "expressions": {
+         "virtual_network_name": {
+          "references": [
+           "var.vnet_name"
+          ]
+         }
+        }
+       },
+       {
+        "address": "azurerm_databricks_workspace.this",
+        "mode": "managed",
+        "type": "azurerm_databricks_workspace",
+        "name": "this",
+        "provider_config_key": "azurerm",
+        "expressions": {
+         "custom_parameters": [
+          {
+           "private_subnet_name": {
+            "references": [
+             "azurerm_subnet.dbx_private.name",
+             "azurerm_subnet.dbx_private"
+            ]
+           }
+          }
+         ]
+        }
+       },
+       {
+        "address": "azurerm_private_endpoint.dbx",
+        "mode": "managed",
+        "type": "azurerm_private_endpoint",
+        "name": "dbx",
+        "provider_config_key": "azurerm",
+        "expressions": {
+         "subnet_id": {
+          "references": [
+           "azurerm_subnet.dbx_private.id",
+           "azurerm_subnet.dbx_private"
+          ]
+         }
+        }
+       },
+       {
+        "address": "databricks_cluster.etl",
+        "mode": "managed",
+        "type": "databricks_cluster",
+        "name": "etl",
+        "provider_config_key": "module.prod_data:databricks",
+        "count_expression": {
+         "constant_value": 1
+        },
+        "expressions": {}
+       },
+       {
+        "address": "databricks_job.nightly",
+        "mode": "managed",
+        "type": "databricks_job",
+        "name": "nightly",
+        "provider_config_key": "module.prod_data:databricks",
+        "expressions": {
+         "existing_cluster_id": {
+          "references": [
+           "databricks_cluster.etl[0].id",
+           "databricks_cluster.etl[0]",
+           "databricks_cluster.etl"
+          ]
+         }
+        }
+       }
+      ]
+     }
+    },
+    "sql": {
+     "source": "./modules/sql",
+     "module": {
+      "resources": [
+       {
+        "address": "azurerm_mssql_database.orders",
+        "mode": "managed",
+        "type": "azurerm_mssql_database",
+        "name": "orders",
+        "provider_config_key": "azurerm",
+        "expressions": {}
+       }
+      ]
+     }
+    }
+   }
+  }
+ },
+ "prior_state": {
+  "format_version": "1.0",
+  "values": {
+   "root_module": {
+    "resources": [
+     {
+      "address": "azurerm_mssql_database.orders",
+      "mode": "managed",
+      "type": "azurerm_mssql_database",
+      "name": "orders"
+     }
+    ],
+    "child_modules": [
+     {
+      "address": "module.prod_data",
+      "resources": [
+       {
+        "address": "module.prod_data.azurerm_subnet.dbx_private",
+        "mode": "managed",
+        "type": "azurerm_subnet",
+        "name": "dbx_private"
+       },
+       {
+        "address": "module.prod_data.azurerm_databricks_workspace.this",
+        "mode": "managed",
+        "type": "azurerm_databricks_workspace",
+        "name": "this",
+        "depends_on": [
+         "module.prod_data.azurerm_subnet.dbx_private"
+        ]
+       },
+       {
+        "address": "module.prod_data.azurerm_monitor_diagnostic_setting.dbx",
+        "mode": "managed",
+        "type": "azurerm_monitor_diagnostic_setting",
+        "name": "dbx",
+        "depends_on": [
+         "module.prod_data.azurerm_databricks_workspace.this"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ }
 }

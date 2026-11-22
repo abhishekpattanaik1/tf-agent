@@ -16,19 +16,18 @@ import hmac
 import json
 import logging
 import os
-import re
 import urllib.error
 import urllib.request
 from types import SimpleNamespace
 
 import explainer
-from tf_risk_scan import SEVERITY_ORDER, scan, to_markdown
+from tf_risk_scan import DEFAULT_PROD_RE, gate_decision, is_prod_workspace, scan, to_markdown
 
 log = logging.getLogger("tf-risk-agent")
 
 FAIL_ON = os.getenv("FAIL_ON", "critical")                       # min severity that fails the task
-PROD_WORKSPACE_RE = os.getenv("PROD_WORKSPACE_REGEX", r"prod")   # whole workspace treated as prod
-PROD_ADDRESS_RE = os.getenv("PROD_ADDRESS_REGEX", r"(^|[._\[\"-])prod")
+PROD_WORKSPACE_RE = os.getenv("PROD_WORKSPACE_REGEX", DEFAULT_PROD_RE)  # whole workspace treated as prod
+PROD_ADDRESS_RE = os.getenv("PROD_ADDRESS_REGEX", DEFAULT_PROD_RE)
 REPORT_URL = os.getenv("REPORT_URL")                             # optional link shown in TFC
 HTTP_TIMEOUT = 60
 
@@ -98,6 +97,12 @@ def build_callback(job, report, passed, explanation_md):
             body.append("**Changed attributes:** " + ", ".join(f"`{p}`" for p in f["changed_attributes"]))
         if f.get("hint"):
             body.append(f["hint"])
+        br = f.get("blast_radius") or {}
+        if br.get("total"):
+            names = [d["address"] for d in br.get("direct", [])] + br.get("indirect", [])
+            body.append(f"**Blast radius:** {br['total']} dependent resource(s), "
+                        f"{len(br.get('critical_dependents', []))} critical: "
+                        + ", ".join(f"`{n}`" for n in names[:10]))
         outcomes.append({"type": "task-result-outcomes", "attributes": {
             "outcome-id": f"finding-{i}",
             "description": f"{f['action'].upper()} {f['address']}"[:250],
@@ -135,14 +140,13 @@ def process_job(job: dict) -> dict:
     """Runs steps 2-5. Always calls back (TFC errors the task after 10 min of silence)."""
     try:
         plan = fetch_plan_json(job["plan_json_api_url"], job["access_token"])
-        prod_ws = bool(re.search(PROD_WORKSPACE_RE, job.get("workspace_name") or "", re.I))
+        prod_ws = is_prod_workspace(job.get("workspace_name"), PROD_WORKSPACE_RE)
         args = SimpleNamespace(prod_pattern=".*" if prod_ws else PROD_ADDRESS_RE)
         report = scan(plan, args)
         report["workspace"] = job.get("workspace_name")
         report["prod_workspace"] = prod_ws
-
-        threshold = SEVERITY_ORDER[FAIL_ON]
-        passed = not any(SEVERITY_ORDER[f["severity"]] >= threshold for f in report["findings"])
+        report["gate"] = gate_decision(report, FAIL_ON)
+        passed = report["gate"] == "PASS"
 
         explanation = None
         if report["findings"]:
@@ -151,8 +155,6 @@ def process_job(job: dict) -> dict:
             except Exception as e:  # LLM is best-effort; never block on it
                 log.exception("explainer failed")
                 explanation = to_markdown(report) + f"\n\n_AI explanation unavailable: {type(e).__name__}_"
-        else:
-            explanation = None
 
         body = build_callback(job, report, passed, explanation)
     except Exception as e:  # noqa: BLE001 - fail closed but tell humans why
